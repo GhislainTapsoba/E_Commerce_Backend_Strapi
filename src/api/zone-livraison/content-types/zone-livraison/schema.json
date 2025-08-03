@@ -1,0 +1,26 @@
+{
+  "kind": "collectionType",
+  "collectionName": "zone_livraisons",
+  "info": {
+    "singularName": "zone-livraison",
+    "pluralName": "zone-livraisons",
+    "displayName": "ZoneLivraison"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "commandes": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::commande.commande"
+    },
+    "nom": {
+      "type": "string"
+    },
+    "frais": {
+      "type": "decimal"
+    }
+  }
+}

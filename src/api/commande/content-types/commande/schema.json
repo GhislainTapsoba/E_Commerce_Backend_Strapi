@@ -1,0 +1,46 @@
+{
+  "kind": "collectionType",
+  "collectionName": "commandes",
+  "info": {
+    "singularName": "commande",
+    "pluralName": "commandes",
+    "displayName": "Commande"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "nom_client": {
+      "type": "string"
+    },
+    "telephone": {
+      "type": "string"
+    },
+    "adresse": {
+      "type": "text"
+    },
+    "statut": {
+      "type": "enumeration",
+      "enum": [
+        "nouvelle",
+        "en_livraison",
+        "livrée",
+        "annulée"
+      ]
+    },
+    "total": {
+      "type": "decimal"
+    },
+    "ligne_commandes": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::ligne-commande.ligne-commande"
+    },
+    "zone_livraison": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::zone-livraison.zone-livraison"
+    }
+  }
+}
