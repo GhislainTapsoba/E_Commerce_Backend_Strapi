@@ -1,0 +1,41 @@
+{
+  "collectionName": "components_shared_section_images",
+  "info": {
+    "displayName": "Section Image",
+    "icon": "landscape"
+  },
+  "options": {},
+  "attributes": {
+    "titre": {
+      "type": "string",
+      "maxLength": 100
+    },
+    "description": {
+      "type": "text"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "position_image": {
+      "type": "enumeration",
+      "default": "gauche",
+      "enum": [
+        "gauche",
+        "droite",
+        "centre"
+      ]
+    },
+    "lien_url": {
+      "type": "string"
+    },
+    "texte_alt": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

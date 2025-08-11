@@ -1,0 +1,40 @@
+{
+  "collectionName": "components_shared_section_galeries",
+  "info": {
+    "displayName": "Section Galerie",
+    "icon": "picture"
+  },
+  "options": {},
+  "attributes": {
+    "titre": {
+      "type": "string",
+      "maxLength": 100
+    },
+    "images": {
+      "type": "media",
+      "multiple": true,
+      "required": true,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "colonnes": {
+      "type": "enumeration",
+      "default": "trois",
+      "enum": [
+        "deux",
+        "trois",
+        "quatre"
+      ]
+    },
+    "affichage": {
+      "type": "enumeration",
+      "default": "grille",
+      "enum": [
+        "grille",
+        "carrousel"
+      ]
+    }
+  },
+  "config": {}
+}

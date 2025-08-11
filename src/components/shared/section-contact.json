@@ -1,0 +1,34 @@
+{
+  "collectionName": "components_shared_section_contacts",
+  "info": {
+    "displayName": "Section Contact",
+    "icon": "user"
+  },
+  "options": {},
+  "attributes": {
+    "titre": {
+      "type": "string",
+      "maxLength": 100
+    },
+    "adresse": {
+      "type": "text"
+    },
+    "telephone": {
+      "type": "string"
+    },
+    "email": {
+      "type": "email"
+    },
+    "whatsapp": {
+      "type": "string"
+    },
+    "horaires": {
+      "type": "text"
+    },
+    "afficher_carte": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "config": {}
+}

@@ -12,16 +12,64 @@
   "pluginOptions": {},
   "attributes": {
     "nom": {
-      "type": "string"
+      "type": "string",
+      "maxLength": 100,
+      "required": true
     },
     "slug": {
       "type": "uid",
-      "targetField": "nom"
+      "targetField": "nom",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "actif": {
+      "type": "boolean",
+      "default": true
+    },
+    "ordre_affichage": {
+      "type": "integer",
+      "default": 0
+    },
+    "meta_titre": {
+      "type": "string",
+      "maxLength": 60
+    },
+    "meta_description": {
+      "type": "text",
+      "minLength": 160
+    },
+    "category": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::categorie.categorie",
+      "inversedBy": "categorie_parente"
+    },
+    "categorie_parente": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::categorie.categorie",
+      "mappedBy": "sous_categories"
+    },
+    "sous_categories": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::categorie.categorie",
+      "inversedBy": "categorie_parente"
     },
     "produits": {
       "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::produit.produit"
+      "relation": "manyToMany",
+      "target": "api::produit.produit",
+      "inversedBy": "categories"
     }
   }
 }

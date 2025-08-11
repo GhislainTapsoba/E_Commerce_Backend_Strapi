@@ -107,43 +107,6 @@ export interface AdminApiTokenPermission extends Struct.CollectionTypeSchema {
   };
 }
 
-export interface AdminAuditLog extends Struct.CollectionTypeSchema {
-  collectionName: 'strapi_audit_logs';
-  info: {
-    displayName: 'Audit Log';
-    pluralName: 'audit-logs';
-    singularName: 'audit-log';
-  };
-  options: {
-    draftAndPublish: false;
-    timestamps: false;
-  };
-  pluginOptions: {
-    'content-manager': {
-      visible: false;
-    };
-    'content-type-builder': {
-      visible: false;
-    };
-  };
-  attributes: {
-    action: Schema.Attribute.String & Schema.Attribute.Required;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    date: Schema.Attribute.DateTime & Schema.Attribute.Required;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<'oneToMany', 'admin::audit-log'> &
-      Schema.Attribute.Private;
-    payload: Schema.Attribute.JSON;
-    publishedAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    user: Schema.Attribute.Relation<'oneToOne', 'admin::user'>;
-  };
-}
-
 export interface AdminPermission extends Struct.CollectionTypeSchema {
   collectionName: 'admin_permissions';
   info: {
@@ -439,6 +402,58 @@ export interface ApiAboutAbout extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiBanniereBanniere extends Struct.CollectionTypeSchema {
+  collectionName: 'bannieres';
+  info: {
+    displayName: 'Banni\u00E8re';
+    pluralName: 'bannieres';
+    singularName: 'banniere';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    actif: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    couleur_fond: Schema.Attribute.String;
+    couleur_texte: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    date_debut: Schema.Attribute.DateTime;
+    date_fin: Schema.Attribute.DateTime;
+    description: Schema.Attribute.Text &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 200;
+      }>;
+    image: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
+    lien_url: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::banniere.banniere'
+    > &
+      Schema.Attribute.Private;
+    ordre_affichage: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    position: Schema.Attribute.Enumeration<
+      ['accueil-hero', 'accueil-milieu', 'sidebar', 'produits']
+    > &
+      Schema.Attribute.DefaultTo<'accueil-hero'>;
+    publishedAt: Schema.Attribute.DateTime;
+    texte_bouton: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        minLength: 30;
+      }>;
+    titre: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 100;
+      }>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiCategorieCategorie extends Struct.CollectionTypeSchema {
   collectionName: 'categories';
   info: {
@@ -450,19 +465,44 @@ export interface ApiCategorieCategorie extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    actif: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    categorie_parente: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::categorie.categorie'
+    >;
+    category: Schema.Attribute.Relation<'oneToOne', 'api::categorie.categorie'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    description: Schema.Attribute.Text;
+    image: Schema.Attribute.Media<'images'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::categorie.categorie'
     > &
       Schema.Attribute.Private;
-    nom: Schema.Attribute.String;
-    produits: Schema.Attribute.Relation<'oneToMany', 'api::produit.produit'>;
+    meta_description: Schema.Attribute.Text &
+      Schema.Attribute.SetMinMaxLength<{
+        minLength: 160;
+      }>;
+    meta_titre: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 60;
+      }>;
+    nom: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 100;
+      }>;
+    ordre_affichage: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    produits: Schema.Attribute.Relation<'manyToMany', 'api::produit.produit'>;
     publishedAt: Schema.Attribute.DateTime;
-    slug: Schema.Attribute.UID<'nom'>;
+    slug: Schema.Attribute.UID<'nom'> & Schema.Attribute.Required;
+    sous_categories: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::categorie.categorie'
+    >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -591,13 +631,15 @@ export interface ApiPagePage extends Struct.CollectionTypeSchema {
     };
   };
   attributes: {
-    brouillon: Schema.Attribute.Boolean &
+    afficher_menu: Schema.Attribute.Boolean &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
         };
-      }>;
-    contenu_html: Schema.Attribute.Text &
+      }> &
+      Schema.Attribute.DefaultTo<false>;
+    contenu: Schema.Attribute.RichText &
+      Schema.Attribute.Required &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
@@ -606,16 +648,7 @@ export interface ApiPagePage extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    date_publication: Schema.Attribute.Date &
-      Schema.Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
-      }>;
-    image: Schema.Attribute.Media<
-      'images' | 'files' | 'videos' | 'audios',
-      true
-    > &
+    image_principale: Schema.Attribute.Media<'images'> &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
@@ -628,20 +661,65 @@ export interface ApiPagePage extends Struct.CollectionTypeSchema {
         i18n: {
           localized: true;
         };
+      }> &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 160;
       }>;
-    meta_title: Schema.Attribute.String &
+    meta_titre: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
         };
+      }> &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 60;
       }>;
+    ordre_menu: Schema.Attribute.Integer &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<0>;
     publishedAt: Schema.Attribute.DateTime;
-    slug: Schema.Attribute.UID<'titre'>;
-    titre: Schema.Attribute.String &
+    shared: Schema.Attribute.DynamicZone<
+      [
+        'shared.section-texte',
+        'shared.section-image',
+        'shared.section-galerie',
+        'shared.section-contact',
+      ]
+    > &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
         };
+      }>;
+    slug: Schema.Attribute.UID<'titre'> &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    template: Schema.Attribute.Enumeration<
+      ['defaut', 'page-complete', 'contact', 'a-propos']
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<'defaut'>;
+    titre: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }> &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 100;
       }>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -660,37 +738,151 @@ export interface ApiProduitProduit extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    actif: Schema.Attribute.Boolean;
-    categorie: Schema.Attribute.Relation<
-      'oneToOne',
+    categories: Schema.Attribute.Relation<
+      'manyToMany',
       'api::categorie.categorie'
     >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    description: Schema.Attribute.Text;
-    images: Schema.Attribute.Media<
-      'images' | 'files' | 'videos' | 'audios',
-      true
-    >;
-    ligne_commandes: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::ligne-commande.ligne-commande'
-    >;
+    description: Schema.Attribute.RichText & Schema.Attribute.Required;
+    description_courte: Schema.Attribute.Text &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 300;
+      }>;
+    dimensions: Schema.Attribute.String;
+    en_stock: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    gerer_stock: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    image_principale: Schema.Attribute.Media<'images'> &
+      Schema.Attribute.Required;
+    images: Schema.Attribute.Media<'images', true> & Schema.Attribute.Required;
+    informations_complementaires: Schema.Attribute.JSON;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::produit.produit'
     > &
       Schema.Attribute.Private;
-    nom: Schema.Attribute.String;
-    prix: Schema.Attribute.Decimal;
+    meta_description: Schema.Attribute.Text &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 160;
+      }>;
+    meta_titre: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 60;
+      }>;
+    mots_cles: Schema.Attribute.String;
+    nom: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 100;
+      }>;
+    nouveau_produit: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
+    poids: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
+    prix: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    prix_promo: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 0;
+        },
+        number
+      >;
+    produit_en_vedette: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
     publishedAt: Schema.Attribute.DateTime;
-    stock: Schema.Attribute.Integer;
+    quantite_stock: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<0>;
+    reference: Schema.Attribute.String &
+      Schema.Attribute.Unique &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 50;
+      }>;
+    slug: Schema.Attribute.UID<'nom'> & Schema.Attribute.Required;
+    statut: Schema.Attribute.Enumeration<
+      ['actif', 'inactif', 'rupture', 'bientot']
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'actif'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    variantes: Schema.Attribute.JSON;
+    variantes: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::variante-produit.variante-produit'
+    >;
+  };
+}
+
+export interface ApiVarianteProduitVarianteProduit
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'variante_produits';
+  info: {
+    displayName: 'Variante Produit';
+    pluralName: 'variante-produits';
+    singularName: 'variante-produit';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    actif: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    ajustement_prix: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    image: Schema.Attribute.Media<'images'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::variante-produit.variante-produit'
+    > &
+      Schema.Attribute.Private;
+    nom: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 50;
+      }>;
+    ordre_affichage: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    produits: Schema.Attribute.Relation<'oneToMany', 'api::produit.produit'>;
+    publishedAt: Schema.Attribute.DateTime;
+    quantite_stock: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<0>;
+    suffixe_reference: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 10;
+      }>;
+    type: Schema.Attribute.Enumeration<
+      ['couleur', 'taille', 'materiau', 'autre']
+    > &
+      Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    valeur: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 50;
+      }>;
   };
 }
 
@@ -1229,19 +1421,20 @@ declare module '@strapi/strapi' {
     export interface ContentTypeSchemas {
       'admin::api-token': AdminApiToken;
       'admin::api-token-permission': AdminApiTokenPermission;
-      'admin::audit-log': AdminAuditLog;
       'admin::permission': AdminPermission;
       'admin::role': AdminRole;
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::about.about': ApiAboutAbout;
+      'api::banniere.banniere': ApiBanniereBanniere;
       'api::categorie.categorie': ApiCategorieCategorie;
       'api::commande.commande': ApiCommandeCommande;
       'api::global.global': ApiGlobalGlobal;
       'api::ligne-commande.ligne-commande': ApiLigneCommandeLigneCommande;
       'api::page.page': ApiPagePage;
       'api::produit.produit': ApiProduitProduit;
+      'api::variante-produit.variante-produit': ApiVarianteProduitVarianteProduit;
       'api::zone-livraison.zone-livraison': ApiZoneLivraisonZoneLivraison;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;

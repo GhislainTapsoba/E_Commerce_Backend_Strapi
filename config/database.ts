@@ -10,7 +10,7 @@ export default ({ env }) => {
         host: env('DATABASE_HOST', 'localhost'),
         port: env.int('DATABASE_PORT', 5432),
         database: env('DATABASE_NAME', 'ecms_db'),
-        user: env('DATABASE_USERNAME', 'ecms'),
+        user: env('DATABASE_USERNAME', 'ecms_user'),
         password: env('DATABASE_PASSWORD', 'Root1234!'),
         ssl: env.bool('DATABASE_SSL', false) && {
           key: env('DATABASE_SSL_KEY'),
