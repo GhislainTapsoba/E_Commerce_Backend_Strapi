@@ -45,7 +45,7 @@
     },
     "meta_description": {
       "type": "text",
-      "minLength": 160
+      "maxLength": 160
     },
     "category": {
       "type": "relation",

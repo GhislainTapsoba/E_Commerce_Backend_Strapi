@@ -484,7 +484,7 @@ export interface ApiCategorieCategorie extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     meta_description: Schema.Attribute.Text &
       Schema.Attribute.SetMinMaxLength<{
-        minLength: 160;
+        maxLength: 160;
       }>;
     meta_titre: Schema.Attribute.String &
       Schema.Attribute.SetMinMaxLength<{
