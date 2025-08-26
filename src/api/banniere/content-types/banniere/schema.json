@@ -33,7 +33,7 @@
     },
     "texte_bouton": {
       "type": "string",
-      "minLength": 30
+      "maxLength": 30
     },
     "actif": {
       "type": "boolean",

@@ -441,7 +441,7 @@ export interface ApiBanniereBanniere extends Struct.CollectionTypeSchema {
     publishedAt: Schema.Attribute.DateTime;
     texte_bouton: Schema.Attribute.String &
       Schema.Attribute.SetMinMaxLength<{
-        minLength: 30;
+        maxLength: 30;
       }>;
     titre: Schema.Attribute.String &
       Schema.Attribute.Required &
